@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
-import { UI, type Lang } from '@/lib/quran'
+import { UI } from '@/lib/quran'
 import { Mascot } from './Mascot'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,19 +47,26 @@ export function Onboarding() {
         <div>
           <p className="mb-2 text-xs font-semibold text-stone-500">{t('chooseLanguage')}</p>
           <div className="grid grid-cols-2 gap-2">
-            {(['en', 'ms'] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLanguage(l)}
-                className={`rounded-2xl border-2 py-2.5 text-sm font-semibold transition ${
-                  language === l
-                    ? 'border-amber-400 bg-amber-50 text-amber-700'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
-                }`}
-              >
-                {UI.english[l]}
-              </button>
-            ))}
+            <button
+              onClick={() => setLanguage('en')}
+              className={`rounded-2xl border-2 py-2.5 text-sm font-semibold transition ${
+                language === 'en'
+                  ? 'border-amber-400 bg-amber-50 text-amber-700'
+                  : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
+              }`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => setLanguage('ms')}
+              className={`rounded-2xl border-2 py-2.5 text-sm font-semibold transition ${
+                language === 'ms'
+                  ? 'border-amber-400 bg-amber-50 text-amber-700'
+                  : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
+              }`}
+            >
+              Bahasa Melayu
+            </button>
           </div>
         </div>
 
