@@ -1,9 +1,9 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Flame, Award } from 'lucide-react'
+import { Star, Flame, Award, Languages } from 'lucide-react'
 import { useAppStore } from '@/store/useAppStore'
-import { UI, BADGES } from '@/lib/quran'
+import { UI, BADGES, type Lang } from '@/lib/quran'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -18,7 +18,7 @@ interface TopBarProps {
 }
 
 export function TopBar({ onOpenBadges }: TopBarProps) {
-  const { language, streak, hasOnboarded, completed } = useAppStore()
+  const { language, setLanguage, streak, hasOnboarded, completed } = useAppStore()
   const t = (k: keyof typeof UI) => UI[k][language]
 
   // Compute total stars from completed (stable reference to the object)
@@ -26,6 +26,8 @@ export function TopBar({ onOpenBadges }: TopBarProps) {
   const unlockedCount = computeUnlockedBadges(completed, streak, totalStars).length
 
   if (!hasOnboarded) return null
+
+  const toggleLang = () => setLanguage(language === 'en' ? 'ms' : 'en')
 
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-amber-100/80 bg-white/85 px-3 py-2 backdrop-blur-md sm:px-5">
@@ -40,15 +42,31 @@ export function TopBar({ onOpenBadges }: TopBarProps) {
           <span className="text-sm font-bold tabular-nums">{totalStars}</span>
         </div>
       </div>
-      <Button
-        size="sm"
-        variant="ghost"
-        className="gap-1 rounded-full text-violet-700 hover:bg-violet-50"
-        onClick={onOpenBadges}
-      >
-        <Award className="h-4 w-4" />
-        <span className="text-xs font-semibold">{unlockedCount}/{BADGES.length}</span>
-      </Button>
+
+      <div className="flex items-center gap-1.5">
+        {/* Language toggle */}
+        <button
+          onClick={toggleLang}
+          className="flex items-center gap-1 rounded-full bg-stone-100 px-2.5 py-1 text-xs font-bold text-stone-700 transition hover:bg-stone-200 active:scale-95"
+          aria-label={t('chooseLanguage')}
+          title={language === 'en' ? 'Tukar ke Bahasa Melayu' : 'Switch to English'}
+        >
+          <Languages className="h-3.5 w-3.5 text-stone-500" />
+          <span className={language === 'en' ? 'text-amber-700' : 'text-stone-400'}>EN</span>
+          <span className="text-stone-300">/</span>
+          <span className={language === 'ms' ? 'text-amber-700' : 'text-stone-400'}>MS</span>
+        </button>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          className="gap-1 rounded-full text-violet-700 hover:bg-violet-50"
+          onClick={onOpenBadges}
+        >
+          <Award className="h-4 w-4" />
+          <span className="text-xs font-semibold">{unlockedCount}/{BADGES.length}</span>
+        </Button>
+      </div>
     </div>
   )
 }
