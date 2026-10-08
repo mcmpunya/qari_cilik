@@ -2,15 +2,19 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Volume2, Star, ChevronRight, ChevronLeft } from 'lucide-react'
-import { HURUF_HIJAIYAH, UI } from '@/lib/quran'
+import { Volume2, Star, ChevronRight, ChevronLeft, Snail } from 'lucide-react'
+import { HURUF_HIJAIYAH, UI, hurufAudioUrl } from '@/lib/quran'
 import { useAppStore } from '@/store/useAppStore'
-import { useSpeech } from '@/hooks/useAudio'
+import { useAudio, useSpeech } from '@/hooks/useAudio'
 import { Button } from '@/components/ui/button'
+
+// Slow playback rate for kids — clear and easy to follow
+const KID_PLAYBACK_RATE = 0.75
 
 export function Level1Huruf({ onComplete }: { onComplete: (stars: number) => void }) {
   const { language, completeItem, completed } = useAppStore()
-  const { speak, isSpeaking } = useSpeech()
+  const audio = useAudio()
+  const { speak, isSpeaking: isSpeakingName } = useSpeech()
   const [currentIdx, setCurrentIdx] = useState(0)
   const [showExample, setShowExample] = useState(false)
   const [justCompleted, setJustCompleted] = useState<number | null>(null)
@@ -22,20 +26,25 @@ export function Level1Huruf({ onComplete }: { onComplete: (stars: number) => voi
     .filter((c) => c.id.startsWith('letter:'))
     .reduce((sum, c) => sum + c.stars, 0)
 
-  const handleSpeak = () => {
-    // Speak the Arabic letter
-    speak(letter.arabic, 'ar-SA', 0.75)
+  // Play real Qari audio for the letter, slowed down for kids
+  const handleSpeakArabic = () => {
+    const url = hurufAudioUrl(letter.audioId)
+    audio.playUrl(url, { rate: KID_PLAYBACK_RATE })
+  }
+
+  // After Arabic plays, optionally say the letter name in EN/MS via Web Speech
+  const handleSpeakAll = () => {
+    handleSpeakArabic()
+    // Speak the name in user's language after a delay (only if supported)
     setTimeout(() => {
-      // Speak the name in the user's language
-      speak(letter.name[language], language === 'en' ? 'en-US' : 'ms-MY', 0.9)
-    }, 800)
+      speak(letter.name[language], language === 'en' ? 'en-US' : 'ms-MY', 0.85)
+    }, 1800)
   }
 
   const handleNext = () => {
     completeItem(`letter:${letter.id}`, 1)
     setJustCompleted(letter.id)
     setTimeout(() => setJustCompleted(null), 1200)
-    // Touch streak on first letter done
     useAppStore.getState().touchStreak()
     if (currentIdx < total - 1) {
       setCurrentIdx((i) => i + 1)
@@ -51,6 +60,8 @@ export function Level1Huruf({ onComplete }: { onComplete: (stars: number) => voi
       setShowExample(false)
     }
   }
+
+  const isPlaying = audio.isPlaying || isSpeakingName
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 px-3 pb-8 pt-4">
@@ -94,17 +105,23 @@ export function Level1Huruf({ onComplete }: { onComplete: (stars: number) => voi
           ) : null}
         </AnimatePresence>
 
+        {/* Slow-play indicator badge */}
+        <div className="absolute left-4 top-4 flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold text-stone-500 shadow-sm">
+          <Snail className="h-3 w-3" />
+          {Math.round(KID_PLAYBACK_RATE * 100)}% {language === 'en' ? 'speed' : 'kelajuan'}
+        </div>
+
         {/* Big Arabic letter */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleSpeak}
+          onClick={handleSpeakArabic}
           className="flex h-48 w-48 items-center justify-center rounded-3xl bg-white shadow-inner border-4 border-amber-200 sm:h-56 sm:w-56"
           aria-label={t('tapToHear')}
         >
           <motion.span
-            animate={isSpeaking ? { scale: [1, 1.08, 1] } : {}}
-            transition={{ duration: 0.4, repeat: isSpeaking ? Infinity : 0 }}
+            animate={isPlaying ? { scale: [1, 1.08, 1] } : {}}
+            transition={{ duration: 0.4, repeat: isPlaying ? Infinity : 0 }}
             className="font-serif text-8xl leading-none text-stone-800 sm:text-9xl"
             style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
           >
@@ -121,13 +138,20 @@ export function Level1Huruf({ onComplete }: { onComplete: (stars: number) => voi
 
         {/* Listen button */}
         <Button
-          onClick={handleSpeak}
-          disabled={isSpeaking}
+          onClick={handleSpeakAll}
+          disabled={isPlaying}
           className="gap-2 rounded-full bg-amber-500 px-6 hover:bg-amber-600 disabled:opacity-50"
         >
           <Volume2 className="h-5 w-5" />
-          {isSpeaking ? t('listening') : t('listen')}
+          {isPlaying ? t('listening') : t('listen')}
         </Button>
+
+        {audio.isLoading ? (
+          <p className="text-xs text-amber-600">{t('audioLoading')}</p>
+        ) : null}
+        {audio.error ? (
+          <p className="text-xs text-rose-600">{t('audioError')}</p>
+        ) : null}
 
         {/* Example */}
         <button

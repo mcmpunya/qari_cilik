@@ -15,37 +15,47 @@ export interface HurufItem {
   name: Bilingual
   transliteration: string
   example: Bilingual // e.g. "Asadun (lion)"
+  audioId: number // mualim-alquran.com data-id (1-30)
+}
+
+// Audio source: mualim-alquran.com — pre-recorded Qari pronunciation
+// Pattern: /wp-includes/audio/s1/l1/001_silence_{audioId}.mp3
+// "silence" variants have a brief pause before pronunciation — great for kids.
+export const HURUF_AUDIO_BASE = "https://mualim-alquran.com/wp-includes/audio/s1/l1"
+
+export function hurufAudioUrl(audioId: number): string {
+  return `${HURUF_AUDIO_BASE}/001_silence_${audioId}.mp3`
 }
 
 export const HURUF_HIJAIYAH: HurufItem[] = [
-  { id: 1, arabic: "ا", name: { en: "Alif", ms: "Alif" }, transliteration: "A", example: { en: "Asad (Lion)", ms: "Asad (Singa)" } },
-  { id: 2, arabic: "ب", name: { en: "Ba", ms: "Ba" }, transliteration: "B", example: { en: "Bab (Door)", ms: "Bab (Pintu)" } },
-  { id: 3, arabic: "ت", name: { en: "Ta", ms: "Ta" }, transliteration: "T", example: { en: "Tuffah (Apple)", ms: "Tuffah (Epal)" } },
-  { id: 4, arabic: "ث", name: { en: "Tha", ms: "Tha" }, transliteration: "Th", example: { en: "Thawb (Garment)", ms: "Thawb (Pakaian)" } },
-  { id: 5, arabic: "ج", name: { en: "Jeem", ms: "Jim" }, transliteration: "J", example: { en: "Jamal (Camel)", ms: "Jamal (Unta)" } },
-  { id: 6, arabic: "ح", name: { en: "Ha (heavy)", ms: "Ha" }, transliteration: "Ḥ", example: { en: "Hisab (Counting)", ms: "Hisab (Pengiraan)" } },
-  { id: 7, arabic: "خ", name: { en: "Kha", ms: "Kha" }, transliteration: "Kh", example: { en: "Khubz (Bread)", ms: "Khubz (Roti)" } },
-  { id: 8, arabic: "د", name: { en: "Dal", ms: "Dal" }, transliteration: "D", example: { en: "Dajaja (Chicken)", ms: "Dajaja (Ayam)" } },
-  { id: 9, arabic: "ذ", name: { en: "Dhal", ms: "Dzal" }, transliteration: "Dh", example: { en: "Dhi'bayn (Wolf)", ms: "Dhi'bayn (Serigala)" } },
-  { id: 10, arabic: "ر", name: { en: "Ra", ms: "Ra" }, transliteration: "R", example: { en: "Rajul (Man)", ms: "Rajul (Lelaki)" } },
-  { id: 11, arabic: "ز", name: { en: "Zay", ms: "Za" }, transliteration: "Z", example: { en: "Zaytun (Olive)", ms: "Zaytun (Zaitun)" } },
-  { id: 12, arabic: "س", name: { en: "Seen", ms: "Sin" }, transliteration: "S", example: { en: "Samak (Fish)", ms: "Samak (Ikan)" } },
-  { id: 13, arabic: "ش", name: { en: "Sheen", ms: "Syin" }, transliteration: "Sh", example: { en: "Shams (Sun)", ms: "Syams (Matahari)" } },
-  { id: 14, arabic: "ص", name: { en: "Sad (heavy)", ms: "Sod" }, transliteration: "Ṣ", example: { en: "Saqr (Falcon)", ms: "Saqr (Helang)" } },
-  { id: 15, arabic: "ض", name: { en: "Dad (heavy)", ms: "Dhod" }, transliteration: "Ḍ", example: { en: "Difda' (Frog)", ms: "Difda' (Katak)" } },
-  { id: 16, arabic: "ط", name: { en: "Ta (heavy)", ms: "Tho" }, transliteration: "Ṭ", example: { en: "Tayr (Bird)", ms: "Tayr (Burung)" } },
-  { id: 17, arabic: "ظ", name: { en: "Zha (heavy)", ms: "Zho" }, transliteration: "Ẓ", example: { en: "Zhiraf (Giraffe)", ms: "Zhiraf (Zirafah)" } },
-  { id: 18, arabic: "ع", name: { en: "Ayn", ms: "'Ain" }, transliteration: "ʿ", example: { en: "Asal (Honey)", ms: "Asal (Madu)" } },
-  { id: 19, arabic: "غ", name: { en: "Ghayn", ms: "Ghin" }, transliteration: "Gh", example: { en: "Ghaymah (Cloud)", ms: "Ghaymah (Awan)" } },
-  { id: 20, arabic: "ف", name: { en: "Fa", ms: "Fa" }, transliteration: "F", example: { en: "Feel (Elephant)", ms: "Feel (Gajah)" } },
-  { id: 21, arabic: "ق", name: { en: "Qaf (heavy)", ms: "Qof" }, transliteration: "Q", example: { en: "Qalam (Pen)", ms: "Qalam (Pena)" } },
-  { id: 22, arabic: "ك", name: { en: "Kaf", ms: "Kaf" }, transliteration: "K", example: { en: "Kalb (Dog)", ms: "Kalb (Anjing)" } },
-  { id: 23, arabic: "ل", name: { en: "Lam", ms: "Lam" }, transliteration: "L", example: { en: "Layl (Night)", ms: "Layl (Malam)" } },
-  { id: 24, arabic: "م", name: { en: "Meem", ms: "Mim" }, transliteration: "M", example: { en: "Maa' (Water)", ms: "Maa' (Air)" } },
-  { id: 25, arabic: "ن", name: { en: "Noon", ms: "Nun" }, transliteration: "N", example: { en: "Nakhl (Palm tree)", ms: "Nakhl (Pokok Kurma)" } },
-  { id: 26, arabic: "ه", name: { en: "Ha (light)", ms: "Ha" }, transliteration: "H", example: { en: "Hilal (Crescent)", ms: "Hilal (Anak Bulan)" } },
-  { id: 27, arabic: "و", name: { en: "Waw", ms: "Wau" }, transliteration: "W", example: { en: "Ward (Rose)", ms: "Ward (Mawar)" } },
-  { id: 28, arabic: "ي", name: { en: "Ya", ms: "Ya" }, transliteration: "Y", example: { en: "Yad (Hand)", ms: "Yad (Tangan)" } },
+  { id: 1, arabic: "ا", name: { en: "Alif", ms: "Alif" }, transliteration: "A", example: { en: "Asad (Lion)", ms: "Asad (Singa)" }, audioId: 1 },
+  { id: 2, arabic: "ب", name: { en: "Ba", ms: "Ba" }, transliteration: "B", example: { en: "Bab (Door)", ms: "Bab (Pintu)" }, audioId: 2 },
+  { id: 3, arabic: "ت", name: { en: "Ta", ms: "Ta" }, transliteration: "T", example: { en: "Tuffah (Apple)", ms: "Tuffah (Epal)" }, audioId: 3 },
+  { id: 4, arabic: "ث", name: { en: "Tha", ms: "Tha" }, transliteration: "Th", example: { en: "Thawb (Garment)", ms: "Thawb (Pakaian)" }, audioId: 4 },
+  { id: 5, arabic: "ج", name: { en: "Jeem", ms: "Jim" }, transliteration: "J", example: { en: "Jamal (Camel)", ms: "Jamal (Unta)" }, audioId: 5 },
+  { id: 6, arabic: "ح", name: { en: "Ha (heavy)", ms: "Ha" }, transliteration: "Ḥ", example: { en: "Hisab (Counting)", ms: "Hisab (Pengiraan)" }, audioId: 6 },
+  { id: 7, arabic: "خ", name: { en: "Kha", ms: "Kha" }, transliteration: "Kh", example: { en: "Khubz (Bread)", ms: "Khubz (Roti)" }, audioId: 7 },
+  { id: 8, arabic: "د", name: { en: "Dal", ms: "Dal" }, transliteration: "D", example: { en: "Dajaja (Chicken)", ms: "Dajaja (Ayam)" }, audioId: 8 },
+  { id: 9, arabic: "ذ", name: { en: "Dhal", ms: "Dzal" }, transliteration: "Dh", example: { en: "Dhi'bayn (Wolf)", ms: "Dhi'bayn (Serigala)" }, audioId: 9 },
+  { id: 10, arabic: "ر", name: { en: "Ra", ms: "Ra" }, transliteration: "R", example: { en: "Rajul (Man)", ms: "Rajul (Lelaki)" }, audioId: 10 },
+  { id: 11, arabic: "ز", name: { en: "Zay", ms: "Za" }, transliteration: "Z", example: { en: "Zaytun (Olive)", ms: "Zaytun (Zaitun)" }, audioId: 11 },
+  { id: 12, arabic: "س", name: { en: "Seen", ms: "Sin" }, transliteration: "S", example: { en: "Samak (Fish)", ms: "Samak (Ikan)" }, audioId: 12 },
+  { id: 13, arabic: "ش", name: { en: "Sheen", ms: "Syin" }, transliteration: "Sh", example: { en: "Shams (Sun)", ms: "Syams (Matahari)" }, audioId: 13 },
+  { id: 14, arabic: "ص", name: { en: "Sad (heavy)", ms: "Sod" }, transliteration: "Ṣ", example: { en: "Saqr (Falcon)", ms: "Saqr (Helang)" }, audioId: 14 },
+  { id: 15, arabic: "ض", name: { en: "Dad (heavy)", ms: "Dhod" }, transliteration: "Ḍ", example: { en: "Difda' (Frog)", ms: "Difda' (Katak)" }, audioId: 15 },
+  { id: 16, arabic: "ط", name: { en: "Ta (heavy)", ms: "Tho" }, transliteration: "Ṭ", example: { en: "Tayr (Bird)", ms: "Tayr (Burung)" }, audioId: 16 },
+  { id: 17, arabic: "ظ", name: { en: "Zha (heavy)", ms: "Zho" }, transliteration: "Ẓ", example: { en: "Zhiraf (Giraffe)", ms: "Zhiraf (Zirafah)" }, audioId: 17 },
+  { id: 18, arabic: "ع", name: { en: "Ayn", ms: "'Ain" }, transliteration: "ʿ", example: { en: "Asal (Honey)", ms: "Asal (Madu)" }, audioId: 18 },
+  { id: 19, arabic: "غ", name: { en: "Ghayn", ms: "Ghin" }, transliteration: "Gh", example: { en: "Ghaymah (Cloud)", ms: "Ghaymah (Awan)" }, audioId: 19 },
+  { id: 20, arabic: "ف", name: { en: "Fa", ms: "Fa" }, transliteration: "F", example: { en: "Feel (Elephant)", ms: "Feel (Gajah)" }, audioId: 20 },
+  { id: 21, arabic: "ق", name: { en: "Qaf (heavy)", ms: "Qof" }, transliteration: "Q", example: { en: "Qalam (Pen)", ms: "Qalam (Pena)" }, audioId: 21 },
+  { id: 22, arabic: "ك", name: { en: "Kaf", ms: "Kaf" }, transliteration: "K", example: { en: "Kalb (Dog)", ms: "Kalb (Anjing)" }, audioId: 22 },
+  { id: 23, arabic: "ل", name: { en: "Lam", ms: "Lam" }, transliteration: "L", example: { en: "Layl (Night)", ms: "Layl (Malam)" }, audioId: 23 },
+  { id: 24, arabic: "م", name: { en: "Meem", ms: "Mim" }, transliteration: "M", example: { en: "Maa' (Water)", ms: "Maa' (Air)" }, audioId: 24 },
+  { id: 25, arabic: "ن", name: { en: "Noon", ms: "Nun" }, transliteration: "N", example: { en: "Nakhl (Palm tree)", ms: "Nakhl (Pokok Kurma)" }, audioId: 25 },
+  { id: 26, arabic: "ه", name: { en: "Ha (light)", ms: "Ha" }, transliteration: "H", example: { en: "Hilal (Crescent)", ms: "Hilal (Anak Bulan)" }, audioId: 27 },
+  { id: 27, arabic: "و", name: { en: "Waw", ms: "Wau" }, transliteration: "W", example: { en: "Ward (Rose)", ms: "Ward (Mawar)" }, audioId: 26 },
+  { id: 28, arabic: "ي", name: { en: "Ya", ms: "Ya" }, transliteration: "Y", example: { en: "Yad (Hand)", ms: "Yad (Tangan)" }, audioId: 30 },
 ]
 
 // ============================================================

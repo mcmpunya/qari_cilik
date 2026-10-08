@@ -17,7 +17,8 @@ export function useAudio() {
     if (typeof window === 'undefined') return
     audioRef.current = new Audio()
     audioRef.current.preload = 'auto'
-    audioRef.current.crossOrigin = 'anonymous'
+    // Note: do NOT set crossOrigin — mualim-alquran.com doesn't send CORS headers,
+    // and we don't need to read the audio buffer; just play it.
 
     const a = audioRef.current
     const onPlay = () => setIsPlaying(true)
@@ -53,7 +54,7 @@ export function useAudio() {
     }
   }, [])
 
-  const playUrl = useCallback((url: string) => {
+  const playUrl = useCallback((url: string, opts?: { rate?: number; fromTime?: number }) => {
     if (!audioRef.current) return
     setError(null)
     // Stop any speech synthesis in progress
@@ -64,7 +65,9 @@ export function useAudio() {
     if (a.src !== url) {
       a.src = url
     }
-    a.currentTime = 0
+    a.currentTime = opts?.fromTime ?? 0
+    // Slow down playback for kids (default rate 0.8 = 80% speed)
+    a.playbackRate = opts?.rate ?? 0.8
     a.play().catch(() => setError('audio-error'))
   }, [])
 
