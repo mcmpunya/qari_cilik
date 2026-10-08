@@ -69,6 +69,19 @@ export interface HarakahItem {
   sound: Bilingual // short vowel sound description
   example: Bilingual // letter + harakah
   exampleArabic: string
+  audioLesson: string // '1', '4', or '4_' (the 'l' prefix is added by harakahAudioUrl)
+  audioId: number // file id within that lesson
+}
+
+// Audio source: mualim-alquran.com
+// Pattern: /wp-includes/audio/s1/l{lesson}/00{lesson}_silence_{id}.mp3
+// e.g. lesson "4" -> /wp-includes/audio/s1/l4/004_silence_79.mp3
+// e.g. lesson "4_" -> /wp-includes/audio/s1/l4_/004__silence_79.mp3
+export const HARAKAT_AUDIO_BASE = "https://mualim-alquran.com/wp-includes/audio/s1"
+
+export function harakahAudioUrl(lesson: string, audioId: number): string {
+  // lesson is just the number (e.g. "4", "4_", "1"); 'l' prefix is added here
+  return `${HARAKAT_AUDIO_BASE}/l${lesson}/00${lesson}_silence_${audioId}.mp3`
 }
 
 export const HARAKAT: HarakahItem[] = [
@@ -79,6 +92,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "Short 'a' as in 'cat'", ms: "Bunyi 'a' pendek" },
     example: { en: "Ba + Fathah = 'Ba'", ms: "Ba + Fathah = 'Ba'" },
     exampleArabic: "بَ",
+    audioLesson: "4",
+    audioId: 79, // Ba + Fathah
   },
   {
     id: "kasrah",
@@ -87,6 +102,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "Short 'i' as in 'sit'", ms: "Bunyi 'i' pendek" },
     example: { en: "Ba + Kasrah = 'Bi'", ms: "Ba + Kasrah = 'Bi'" },
     exampleArabic: "بِ",
+    audioLesson: "4",
+    audioId: 80, // Ba + Kasrah
   },
   {
     id: "dammah",
@@ -95,6 +112,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "Short 'u' as in 'put'", ms: "Bunyi 'u' pendek" },
     example: { en: "Ba + Dammah = 'Bu'", ms: "Ba + Dammah = 'Bu'" },
     exampleArabic: "بُ",
+    audioLesson: "4",
+    audioId: 6, // Ba + Dammah
   },
   {
     id: "tanwin-fath",
@@ -103,6 +122,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "'an' sound", ms: "Bunyi 'an'" },
     example: { en: "Ba + Tanwin Fathah = 'Ban'", ms: "Ba + Tanwin Fathah = 'Ban'" },
     exampleArabic: "بً",
+    audioLesson: "4_",
+    audioId: 79, // Ba + Tanwin Fathah
   },
   {
     id: "tanwin-kasr",
@@ -111,6 +132,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "'in' sound", ms: "Bunyi 'in'" },
     example: { en: "Ba + Tanwin Kasrah = 'Bin'", ms: "Ba + Tanwin Kasrah = 'Bin'" },
     exampleArabic: "بٍ",
+    audioLesson: "4_",
+    audioId: 80, // Ba + Tanwin Kasrah
   },
   {
     id: "tanwin-damm",
@@ -119,6 +142,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "'un' sound", ms: "Bunyi 'un'" },
     example: { en: "Ba + Tanwin Dammah = 'Bun'", ms: "Ba + Tanwin Dammah = 'Bun'" },
     exampleArabic: "بٌ",
+    audioLesson: "4_",
+    audioId: 6, // Ba + Tanwin Dammah
   },
   {
     id: "sukun",
@@ -127,6 +152,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "No vowel (silent)", ms: "Tanpa bunyi vokal" },
     example: { en: "Ba + Sukun = just 'B'", ms: "Ba + Sukun = 'B' sahaja" },
     exampleArabic: "بْ",
+    audioLesson: "1",
+    audioId: 2, // raw Ba consonant (sukun = no vowel)
   },
   {
     id: "madd",
@@ -135,6 +162,8 @@ export const HARAKAT: HarakahItem[] = [
     sound: { en: "Stretched 'aa' sound", ms: "Bunyi 'aa' panjang" },
     example: { en: "Ba + Madd = 'Baa'", ms: "Ba + Madd = 'Baa'" },
     exampleArabic: "بَا",
+    audioLesson: "4",
+    audioId: 79, // Ba + Fathah (Madd extends the Fathah sound)
   },
 ]
 

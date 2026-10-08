@@ -2,15 +2,19 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Volume2, Star, ChevronRight, ChevronLeft } from 'lucide-react'
-import { HARAKAT, UI } from '@/lib/quran'
+import { Volume2, Star, ChevronRight, ChevronLeft, Snail } from 'lucide-react'
+import { HARAKAT, UI, harakahAudioUrl } from '@/lib/quran'
 import { useAppStore } from '@/store/useAppStore'
-import { useSpeech } from '@/hooks/useAudio'
+import { useAudio, useSpeech } from '@/hooks/useAudio'
 import { Button } from '@/components/ui/button'
+
+// Slow playback rate for kids — clear and easy to follow
+const KID_PLAYBACK_RATE = 0.75
 
 export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => void }) {
   const { language, completeItem, completed } = useAppStore()
-  const { speak, isSpeaking } = useSpeech()
+  const audio = useAudio()
+  const { speak, isSpeaking: isSpeakingName } = useSpeech()
   const [currentIdx, setCurrentIdx] = useState(0)
   const total = HARAKAT.length
   const earnedStars = Object.values(completed)
@@ -20,8 +24,18 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
 
   const item = HARAKAT[currentIdx]
 
-  const handleSpeak = () => {
-    speak(item.exampleArabic, 'ar-SA', 0.7)
+  // Play real Qari audio for the harakah example, slowed down for kids
+  const handleSpeakArabic = () => {
+    const url = harakahAudioUrl(item.audioLesson, item.audioId)
+    audio.playUrl(url, { rate: KID_PLAYBACK_RATE })
+  }
+
+  // Play Arabic first, then speak the name in user's language
+  const handleSpeakAll = () => {
+    handleSpeakArabic()
+    setTimeout(() => {
+      speak(item.name[language], language === 'en' ? 'en-US' : 'ms-MY', 0.85)
+    }, 1500)
   }
 
   const handleNext = () => {
@@ -37,6 +51,8 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
   const handlePrev = () => {
     if (currentIdx > 0) setCurrentIdx((i) => i - 1)
   }
+
+  const isPlaying = audio.isPlaying || isSpeakingName
 
   const colorMap: Record<string, string> = {
     fathah: 'from-rose-50 to-pink-50 border-rose-200',
@@ -76,6 +92,12 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
         animate={{ opacity: 1, y: 0 }}
         className={cnCard(colorMap[item.id])}
       >
+        {/* Slow-play indicator badge */}
+        <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold text-stone-500 shadow-sm">
+          <Snail className="h-3 w-3" />
+          {Math.round(KID_PLAYBACK_RATE * 100)}% {language === 'en' ? 'speed' : 'kelajuan'}
+        </div>
+
         <div className="flex flex-col items-center gap-5">
           <p className="text-lg font-bold text-stone-800">{item.name[language]}</p>
 
@@ -83,12 +105,13 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={handleSpeak}
+            onClick={handleSpeakArabic}
             className="flex h-40 w-56 items-center justify-center rounded-3xl bg-white shadow-inner border-4 border-white"
+            aria-label={t('tapToHear')}
           >
             <motion.span
-              animate={isSpeaking ? { scale: [1, 1.06, 1] } : {}}
-              transition={{ duration: 0.4, repeat: isSpeaking ? Infinity : 0 }}
+              animate={isPlaying ? { scale: [1, 1.06, 1] } : {}}
+              transition={{ duration: 0.4, repeat: isPlaying ? Infinity : 0 }}
               className="font-serif text-7xl leading-none text-stone-800"
               style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
             >
@@ -113,13 +136,20 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
           </p>
 
           <Button
-            onClick={handleSpeak}
-            disabled={isSpeaking}
+            onClick={handleSpeakAll}
+            disabled={isPlaying}
             className="gap-2 rounded-full bg-emerald-500 px-6 hover:bg-emerald-600 disabled:opacity-50"
           >
             <Volume2 className="h-5 w-5" />
-            {isSpeaking ? t('listening') : t('listen')}
+            {isPlaying ? t('listening') : t('listen')}
           </Button>
+
+          {audio.isLoading ? (
+            <p className="text-xs text-emerald-600">{t('audioLoading')}</p>
+          ) : null}
+          {audio.error ? (
+            <p className="text-xs text-rose-600">{t('audioError')}</p>
+          ) : null}
         </div>
       </motion.div>
 
@@ -147,5 +177,5 @@ export function Level2Harakat({ onComplete }: { onComplete: (stars: number) => v
 }
 
 function cnCard(gradient: string) {
-  return `bg-gradient-to-br ${gradient} rounded-3xl border-2 p-6 shadow-lg`
+  return `relative bg-gradient-to-br ${gradient} rounded-3xl border-2 p-6 shadow-lg`
 }
